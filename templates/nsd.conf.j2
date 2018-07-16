@@ -1,0 +1,24 @@
+# $OpenBSD: nsd.conf,v 1.12 2018/05/18 05:15:33 florian Exp $
+#
+# {{ ansible_managed }}
+#
+
+server:
+	hide-version: yes
+	verbosity: 1
+	ip-transparent: yes
+	database: "" # disable database
+
+## bind to a specific address/port
+#	ip-address: 192.0.2.53
+#	ip-address: 192.0.2.53@5678
+#	ip-address: 2001:db8::53
+
+remote-control:
+	control-enable: yes
+
+## master zone
+zone:
+	name: "{{ domain }}"
+	zonefile: "master/{{ domain }}"
+

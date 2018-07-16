@@ -1,0 +1,24 @@
+---
+
+- name: start and enable dhcpd
+  service:
+    name: dhcpd
+    state: started
+    enabled: True
+
+- name: start and enable nsd
+  service:
+    name: nsd
+    state: started
+    enabled: True
+
+- name: restart nsd
+  service:
+    name: nsd
+    state: restarted
+
+- name: reload pf
+  command: pfctl -f /etc/pf.conf
+
+- name: run netstart
+  command: sh /etc/netstart

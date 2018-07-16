@@ -1,0 +1,72 @@
+---
+
+- name: Set sysctl options
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    reload: yes
+  loop: "{{ sysctl }}"
+
+- name: Configure vlan hostname.if files
+  template:
+    src: hostname.vlan.j2
+    dest: "/etc/hostname.{{ item.if_name }}"
+    mode: 0640
+    owner: root
+    group: wheel
+  loop: "{{ network }}"
+  notify: run netstart
+
+- name: Configure hostname.if files for vlans
+  template:
+    src: hostname.parent.j2
+    dest: "/etc/hostname.{{ item }}"
+    mode: 0640
+    owner: root
+    group: wheel
+  loop: "{{ network | map(attribute='parent') | unique | sort | list }}"
+  notify: run netstart
+
+- name: Flush handlers to activiate network
+  meta: flush_handlers
+
+- name: Configure dhcpd
+  template:
+    src: dhcpd.conf.j2
+    dest: /etc/dhcpd.conf
+    mode: 0644
+    owner: root
+    group: wheel
+  notify: start and enable dhcpd
+
+- name: Configure nsd
+  template:
+    src: nsd.conf.j2
+    dest: /var/nsd/etc/nsd.conf
+    mode: 0640
+    owner: root
+    group: _nsd
+    validate: /usr/sbin/nsd-checkconf -v %s
+  notify: start and enable nsd
+
+- name: Configure master zone file
+  template:
+    src: zone.j2
+    dest: /var/nsd/zones/master/{{ domain }}
+    mode: 0640
+    owner: root
+    group: _nsd
+    validate: "/usr/sbin/nsd-checkzone {{ domain }} %s"
+  notify: restart nsd
+
+- name: Configure pf.conf
+  template:
+    src: pf.conf.j2
+    dest: /etc/pf.conf
+    mode: 0600
+    owner: root
+    group: wheel
+    validate: "/sbin/pfctl -nf %s"
+  notify: reload pf
+  tags:
+    - pf.conf

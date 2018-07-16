@@ -1,0 +1,32 @@
+#	$OpenBSD: dhcpd.conf,v 1.1 2014/07/11 21:20:10 deraadt Exp $
+#
+# {{ ansible_managed }}
+#
+# DHCP server options.
+# See dhcpd.conf(5) and dhcpd(8) for more information.
+#
+
+# Network:		192.168.1.0/255.255.255.0
+# Domain name:		my.domain
+# Name servers:		192.168.1.3 and 192.168.1.5
+# Default router:	192.168.1.1
+# Addresses:		192.168.1.32 - 192.168.1.127
+#
+option  domain-name "{{ domain }}";
+option  domain-name-servers {{ name_servers | join(', ') }};
+
+{% for net in network %}
+subnet {{ net.net }} netmask {{ net.netmask }} {
+	option routers {{ net.routers | join(', ') }};
+
+	range {{ net.dhcp_start }} {{ net.dhcp_end }};
+
+{% for static in net.static_ips %}
+	host {{ static.name }} {
+		hardware ethernet {{ static.ethernet }};
+		fixed-address {{ static.address }};
+	}
+
+{% endfor %}
+}
+{% endfor %}

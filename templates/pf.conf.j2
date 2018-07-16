@@ -1,0 +1,49 @@
+#
+# {{ ansible_managed }}
+#
+
+{% set vlan_list = [] %}
+{% for net in network %}
+{% if net.type == "vlan" %}{{ vlan_list.append( net.if_name ) }}# {{ net.if_name }}	{{ net.net }}	{{ net.name }}
+{% endif %}
+{% endfor %}
+
+ext_if = "{{ ansible_default_ipv4.device }}"
+vlans = "{ {{ vlan_list | join(', ') }} }"
+vlan_nets = "{ {{ vlan_list | join(':network, ') }}:network }"
+
+icmp_types = "{echoreq unreach}"
+icmp6_types = "{echoreq unreach timex paramprob}"
+
+set skip on lo
+
+# To see what is blocking: tcpdump -nettipflog0
+block log all
+
+# Nat our stuffs
+match out on $ext_if inet from $vlan_nets nat-to ($ext_if)
+
+# Port forwarding example
+#pass in on $ext_if inet proto tcp from any to ($ext_if) port ssh \
+#	rdr-to 10.66.0.86 port ssh tag forwarding
+#pass out proto tcp from any to 10.66.0.86 port ssh tagged forwarding
+
+# Allow ICMP
+pass inet proto icmp icmp-type $icmp_types
+pass inet6 proto icmp6 icmp6-type $icmp6_types
+
+# Allow DNS and NTP
+pass quick proto {tcp, udp} from {self, $vlan_nets} to port {domain, ntp}
+
+pass from { self }
+
+{% for vlan in vlan_list %}
+pass from {{ vlan }}:network to {{ vlan }}
+{% endfor %}
+
+{% if debug %}
+# We are working in debug mode, let in ssh from external
+pass in on $ext_if proto tcp to port ssh
+
+pass from $vlan_nets
+{% endif %}

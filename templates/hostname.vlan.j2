@@ -1,0 +1,7 @@
+#
+# {{ ansible_managed }}
+#
+
+{% if item.type == "vlan" %}
+inet {{ item.ip }} {{ item.netmask }} {{ item.broadcast }} vnetid {{ item.vlan_id }} parent {{ item.parent }} description "{{ item.name }}" up
+{% endif %}

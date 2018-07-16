@@ -1,0 +1,21 @@
+;
+; {{ ansible_managed }}
+;
+
+$ORIGIN {{ domain }}.
+$TTL 1800
+
+@	IN	SOA	ns1.{{ domain }}.	admin.{{ domain }}.	(
+			{{ '%Y%m%d%H' | strftime }}		; serial number
+			3600			; refresh
+			900			; retry
+			1209600			; expire
+			1800			; ttl
+)
+
+; A records
+{% for net in network %}
+{% for static in net.static_ips %}
+{{ static.name }}		IN	A	{{ static.address }}
+{% endfor %}
+{% endfor %}
