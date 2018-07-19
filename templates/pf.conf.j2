@@ -55,13 +55,19 @@ pass quick proto {tcp, udp} from {self, $vlan_nets} to port {domain, ntp}
 
 pass from { self }
 
-{% for vlan in vlan_list %}
-pass from {{ vlan }}:network to {{ vlan }}
+{% for net in network %}
+{% if net.type == "vlan" %}
+# {{ net.if_name }} ({{ net.name }}) {{ net.net }}/{{ net.netmask }}
+{% if net.pf_rules is defined %}
+{% for rule in net.pf_rules %}
+{{ rule }}
+{% endfor %}
+{% endif %}
+
+{% endif %}
 {% endfor %}
 
 {% if debug %}
 # We are working in debug mode, let in ssh from external
 pass in on $ext_if proto tcp to port ssh
-
-pass from $vlan_nets
 {% endif %}
