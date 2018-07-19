@@ -29,8 +29,14 @@ icmp6_types = "{echoreq unreach timex paramprob}"
 
 set skip on lo
 
+# scrub incoming packets
+match in all scrub (no-df)
+
 # To see what is blocking: tcpdump -nettipflog0
 block log all
+
+# activate spoofing protection for all interfaces
+block in quick from urpf-failed
 
 # Nat our stuffs
 match out on $ext_if inet from $vlan_nets nat-to ($ext_if)
