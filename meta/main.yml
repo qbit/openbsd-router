@@ -1,5 +1,5 @@
 galaxy_info:
-  role_name: qbit.router
+  role_name: router
   author: Aaron Bieber <aaron@bolddaemon.com>
   description: OpenBSD router
 
