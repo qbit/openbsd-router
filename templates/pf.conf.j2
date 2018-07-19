@@ -71,3 +71,8 @@ pass from { self }
 # We are working in debug mode, let in ssh from external
 pass in on $ext_if proto tcp to port ssh
 {% endif %}
+
+# Allow OpenBSD boxes to connect via ssh
+pass in on $vlan_nets proto tcp from any os OpenBSD to port ssh
+
+pass out on egress proto { tcp udp icmp } all modulate state
