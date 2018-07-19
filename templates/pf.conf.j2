@@ -12,6 +12,18 @@ ext_if = "{{ ansible_default_ipv4.device }}"
 #vlans = "{ {{ vlan_list | join(', ') }} }"
 vlan_nets = "{ {{ vlan_list | join(':network, ') }}:network }"
 
+table <firewall> const { self }
+
+{% if queues is defined %}
+{% for q in queues %}
+queue {{ q.name }} on {{ q.interface }} bandwidth {{ q.bandwidth }} max {{ q.max }}
+{% for qq in q.queue %}
+queue  {{ qq.name }} parent {{ q.name }} bandwidth {{ qq.bandwidth }} max {{ qq.max }} {% if qq.burst is defined %}burst {{ qq.burst }} {% endif %}{% if qq.default is defined and qq.default == True %}default{% endif %}
+
+{% endfor %}
+{% endfor %}
+{% endif %}
+
 icmp_types = "{echoreq unreach}"
 icmp6_types = "{echoreq unreach timex paramprob}"
 
