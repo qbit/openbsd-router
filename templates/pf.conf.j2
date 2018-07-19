@@ -9,7 +9,7 @@
 {% endfor %}
 
 ext_if = "{{ ansible_default_ipv4.device }}"
-vlans = "{ {{ vlan_list | join(', ') }} }"
+#vlans = "{ {{ vlan_list | join(', ') }} }"
 vlan_nets = "{ {{ vlan_list | join(':network, ') }}:network }"
 
 icmp_types = "{echoreq unreach}"
