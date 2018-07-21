@@ -32,8 +32,13 @@ set skip on lo
 # scrub incoming packets
 match in all scrub (no-df)
 
-# To see what is blocking: tcpdump -nettipflog0
+# To see what is blocking, set "debug=True" and run
+# tcpdump -nettipflog0
+{% if debug == True %}
 block log all
+{% else %}
+block all
+{% endif %}
 
 # activate spoofing protection for all interfaces
 block in quick from urpf-failed
@@ -71,7 +76,6 @@ pass from { self }
 # We are working in debug mode, let in ssh from external
 pass in on $ext_if proto tcp to port ssh
 {% endif %}
-
 # Allow OpenBSD boxes to connect via ssh
 pass in on $vlan_nets proto tcp from any os OpenBSD to port ssh
 
