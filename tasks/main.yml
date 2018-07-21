@@ -49,6 +49,7 @@
     validate: /usr/sbin/nsd-checkconf -v %s
   notify: start and enable nsd
 
+# TODO: fix the serialization stuff so we don't regen every run
 - name: Configure master zone file
   template:
     src: zone.j2
