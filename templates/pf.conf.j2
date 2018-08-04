@@ -19,6 +19,12 @@ ext_if = "{{ ansible_default_ipv4.device }}"
 #vlans = "{ {{ vlan_list | join(', ') }} }"
 vlan_nets = "{ {{ vlan_list | join(':network, ') }}:network }"
 
+{% if pf_macros is defined %}
+{% for m in pf_macros %}
+{{ m.name }} = "{ {{ m.val | join(', ') }} }"
+{% endfor %}
+{% endif %}
+
 table <firewall> const { self }
 
 {% if queues is defined %}
