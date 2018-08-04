@@ -80,9 +80,9 @@ pass inet proto icmp icmp-type $icmp_types
 pass inet6 proto icmp6 icmp6-type $icmp6_types
 
 # Allow DNS and NTP
-pass quick proto {tcp, udp} from {self, $vlan_nets} to port {domain, ntp}
+pass quick proto {tcp, udp} from $vlan_nets to port {domain, ntp}
 
-pass from { self }
+pass from <firewall>
 
 {% for net in network %}
 {% if net.type == "vlan" %}
