@@ -5,8 +5,8 @@ sysctl:
     - { name: "kern.pool_debug", value: 0 }
     - { name: "net.inet.ip.forwarding", value: 1 }
     - { name: "net.inet6.ip6.forwarding", value: 1 }
-      #- { name: "net.inet6.ip6.mforwarding", value: 1 }
-      #- { name: "net.inet.ip.mforwarding", value: 1 }
+    - { name: "net.inet6.ip6.mforwarding", value: 1 }
+    - { name: "net.inet.ip.mforwarding", value: 1 }
 
 ext_if: "{{ ansible_default_ipv4.device }}"
 
