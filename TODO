@@ -1,0 +1,2 @@
+- rename hostname.vlan.j2
+- Run fetch script as non-root
