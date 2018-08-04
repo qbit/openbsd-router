@@ -22,17 +22,29 @@
     owner: root
     group: wheel
   loop: "{{ network }}"
+  #when: item.type is defined and item.type is "vlan"
   notify: run netstart
 
-- name: Configure hostname.if files for vlans
+- name: Configure physical hostname.if files
   template:
-    src: hostname.parent.j2
-    dest: "/etc/hostname.{{ item }}"
+    src: hostname.vlan.j2
+    dest: "/etc/hostname.{{ item.if_name }}"
     mode: 0640
     owner: root
     group: wheel
-  loop: "{{ network | map(attribute='parent') | unique | sort | list }}"
+  loop: "{{ network }}"
+  #when: item.type is defined and item.type is "physical"
   notify: run netstart
+
+  #- name: Configure hostname.if files for vlans
+  #template:
+  #  src: hostname.parent.j2
+  #  dest: "/etc/hostname.{{ item }}"
+  #  mode: 0640
+  #  owner: root
+  #  group: wheel
+  #loop: "{{ network | map(attribute='parent') | unique | sort | list }}"
+  #notify: run netstart
 
 - name: Flush handlers to activiate network
   meta: flush_handlers
@@ -66,6 +78,37 @@
     group: _nsd
     validate: "/usr/sbin/nsd-checkzone {{ domain }} %s"
   notify: restart nsd
+
+- name: Create table list files
+  copy:
+    dest: "{{ item.file }}"
+    content: "{{ item.list | join('\n') }}"
+    owner: root
+    group: wheel
+    mode: 0600
+  when: item.file is defined and item.list is defined
+  loop: "{{ tables }}"
+  tags:
+    - pf.conf
+
+- name: Create table population scripts
+  template:
+    src: fetch_list.sh.j2
+    dest: "/root/update_pf_tables.sh"
+    mode: 0700
+    owner: root
+    group: wheel
+  tags:
+    - pf.conf
+
+- name: Create table population cron jobs
+  cron:
+    name: "PF table update script"
+    special_time: hourly
+    job: "/root/update_pf_tables.sh"
+
+- name: Run update_pf_tables.sh
+  command: /root/update_pf_tables.sh
 
 - name: Configure pf.conf
   template:
