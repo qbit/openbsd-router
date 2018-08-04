@@ -4,7 +4,14 @@
 
 {% set vlan_list = [] %}
 {% for net in network %}
-{% if net.type == "vlan" %}{{ vlan_list.append( net.if_name ) }}# {{ net.if_name }}	{{ net.net }}	{{ net.name }}
+{% if net.type == "vlan" %}
+{{ vlan_list.append( net.if_name ) }}
+# {{ net.if_name }}	{{ net.net }}	{{ net.name }}
+{% endif %}
+{% if net.static_ips is defined %}
+{% for host in net.static_ips %}
+{{ host.name }} = "{{ host.address }}" # {{ host.ethernet }}
+{% endfor %}
 {% endif %}
 {% endfor %}
 
