@@ -19,7 +19,9 @@ option  domain-name-servers {{ name_servers | join(', ') }};
 subnet {{ net.net }} netmask {{ net.netmask }} {
 	option routers {{ net.routers | join(', ') }};
 
+{% if net.dhcp_start is defined %}
 	range {{ net.dhcp_start }} {{ net.dhcp_end }};
+{% endif %}
 
 {% for static in net.static_ips %}
 	host {{ static.name }} {
