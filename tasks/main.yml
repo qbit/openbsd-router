@@ -1,5 +1,12 @@
 ---
 
+- name: Install dependencies
+  package:
+    name: "{{ item }}"
+    state: installed
+  loop:
+    - jq
+
 - name: Set sysctl options
   sysctl:
     name: "{{ item.name }}"
