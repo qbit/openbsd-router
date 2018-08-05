@@ -58,6 +58,28 @@
     group: wheel
   notify: start and enable dhcpd
 
+- name: update root-hints
+  get_url:
+    url: https://www.internic.net/domain/named.cache
+    dest: /var/unbound/etc/named.cache
+    owner: root
+    group: _unbound
+    mode: 0644
+  tags:
+    - unbound
+
+- name: Configure unbound
+  template:
+    src: unbound.conf.j2
+    dest: /var/unbound/etc/unbound.conf
+    mode: 0640
+    owner: root
+    group: _unbound
+    validate: /usr/sbin/unbound -v -c %s
+  notify: restart and enable unbound
+  tags:
+    - unbound
+
 - name: Configure nsd
   template:
     src: nsd.conf.j2

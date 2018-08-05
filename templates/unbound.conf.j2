@@ -1,0 +1,31 @@
+# {{ ansible_managed }}
+
+server:
+{% for net in network %}
+	interface: {{ net.ip }}
+{% endfor %}
+	access-control: 0.0.0.0/0 refuse
+	access-control: 127.0.0.0/8 allow
+{% for net in network %}
+	access-control: {{ [net.net,net.netmask] | join('/') | ipaddr('net') }} allow
+{% endfor %}
+
+	hide-identity: yes
+	hide-version: yes
+
+	auto-trust-anchor-file: "/var/unbound/db/root.key"
+
+	root-hints: "/var/unbound/etc/named.cache"
+
+	local-zone: "{{ domain }}." static
+{% for net in network %}
+{% for ip in net.static_ips %}
+	local-data: "{{ ip.name }}.	IN	A	{{ ip.address }}"
+{% endfor %}
+{% endfor %}
+
+remote-control:
+	control-enable: yes
+	control-use-cert: no
+	control-interface: /var/run/unbound.sock
+

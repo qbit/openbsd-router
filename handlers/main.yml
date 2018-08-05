@@ -12,6 +12,12 @@
     state: started
     enabled: True
 
+- name: restart and enable unbound
+  service:
+    name: unbound
+    state: restarted
+    enabled: True
+
 - name: restart nsd
   service:
     name: nsd
