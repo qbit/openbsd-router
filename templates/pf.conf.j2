@@ -10,7 +10,7 @@
 {% endif %}
 {% if net.static_ips is defined %}
 {% for host in net.static_ips %}
-{{ host.name }} = "{{ host.address }}" # {{ host.ethernet }}
+{{ host.name | regex_replace('\.', '_') }} = "{{ host.address }}" # {{ host.ethernet }}
 {% endfor %}
 {% endif %}
 {% endfor %}
