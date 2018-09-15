@@ -104,7 +104,7 @@
 - name: Create table list files
   copy:
     dest: "{{ item.file }}"
-    content: "{{ item.list | join('\n') }}"
+    content: "{{ item.list | join('\n') }}\n"
     owner: root
     group: wheel
     mode: 0600
@@ -139,7 +139,7 @@
     mode: 0600
     owner: root
     group: wheel
-    validate: "/sbin/pfctl -vvvnf %s"
+    validate: "/sbin/pfctl -vnf %s"
   notify: reload pf
   tags:
     - pf.conf
