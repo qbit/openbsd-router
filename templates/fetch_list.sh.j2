@@ -4,7 +4,7 @@ SUCCESS=1
 {% for t in tables %}
 {% if t.url is defined %}
 /usr/bin/ftp -Vo - '{{ t.url }}' | \
-	/usr/local/bin/jq -r '{{ t.filter }}' > "{{ t.file }} && SUCCESS=0"
+	/usr/local/bin/jq -r '{{ t.filter }}' > "{{ t.file }}" && SUCCESS=0
 {% endif %}
 {% endfor %}
 
