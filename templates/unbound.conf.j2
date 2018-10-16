@@ -20,7 +20,11 @@ server:
 	local-zone: "{{ domain }}." static
 {% for net in network %}
 {% for ip in net.static_ips %}
+{% if ip.name == domain %}
 	local-data: "{% if ip.alias is defined %}{{ ip.alias }}{% else %}{{ ip.name }}{% endif %}.	IN	A	{{ ip.address }}"
+{% else %}
+	local-data: "{% if ip.alias is defined %}{{ ip.alias }}{% else %}{{ ip.name }}{% endif %}.{{ domain }}.	IN	A	{{ ip.address }}"
+{% endif %}
 {% endfor %}
 {% endfor %}
 
