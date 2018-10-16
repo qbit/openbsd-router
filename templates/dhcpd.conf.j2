@@ -25,11 +25,13 @@ subnet {{ net.net }} netmask {{ net.netmask }} {
 {% endif %}
 
 {% for static in net.static_ips %}
+{% if static.ethernet is defined %}
 	host {{ static.name }} {
 		hardware ethernet {{ static.ethernet }};
 		fixed-address {{ static.address }};
 	}
 
+{% endif %}
 {% endfor %}
 }
 {% endfor %}
