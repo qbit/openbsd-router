@@ -1,5 +1,6 @@
 ---
 
+use_authpf: False
 debug: False
 sysctl:
     - { name: "kern.pool_debug", value: 0 }

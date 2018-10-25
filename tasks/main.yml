@@ -132,6 +132,36 @@
 - name: Run update_pf_tables.sh
   command: /root/update_pf_tables.sh
 
+- name: Configure authpf.conf
+  when: use_authpf == True
+  copy:
+    dest: "/etc/authpf/authpf.conf"
+    owner: root
+    group: wheel
+    content: ""
+  tags:
+    - pf.conf
+
+- name: Configure authpf in login.conf
+  when: use_authpf == True
+  blockinfile:
+    dest: "/etc/login.conf"
+    owner: root
+    group: wheel
+    block: "{{ lookup('file', 'login.conf.authpf') }}"
+  tags:
+    - pf.conf
+
+- name: Configure authpf motd
+  when: use_authpf == True
+  copy:
+    dest: "/etc/motd.authpf"
+    src: "motd.authpf"
+    owner: root
+    group: wheel
+  tags:
+    - pf.conf
+
 - name: Configure pf.conf
   template:
     src: pf.conf.j2
