@@ -23,11 +23,30 @@ server:
 {% if ip.name == domain %}
 	local-data: "{% if ip.alias is defined %}{{ ip.alias }}{% else %}{{ ip.name }}{% endif %}.	IN	A	{{ ip.address }}"
 {% else %}
-	local-data: "{% if ip.alias is defined %}{{ ip.alias }}{% else %}{{ ip.name }}{% endif %}.{{ domain }}.	IN	A	{{ ip.address }}"
+{% if ip.alias is defined %}
+	local-data: "{{ ip.alias }}.	IN	A	{{ ip.address }}"
+{% endif %}
+	local-data: "{{ ip.name }}.{{ domain }}.	IN	A	{{ ip.address }}"
 {% endif %}
 {% endfor %}
 {% endfor %}
 
+{% if insecure_domains is defined %}
+{% for di in insecure_domains %}
+	domain-insecure: "{{ di }}"
+{% endfor %}
+
+{% endif %}
+{% if forward_zones is defined %}
+{% for fwd in forward_zones %}
+	forward-zone:
+		name: "{{ fwd.name }}"
+{% for a in fwd.addresses %}
+		forward-addr: "{{ a }}"
+{% endfor %}
+{% endfor %}
+
+{% endif %}
 remote-control:
 	control-enable: yes
 	control-use-cert: no
