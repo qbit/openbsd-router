@@ -13,7 +13,7 @@
 # Addresses:		192.168.1.32 - 192.168.1.127
 #
 option  domain-name "{{ domain }}";
-#option  domain-name-servers {{ name_servers | join(', ') }};
+option  domain-name-servers {{ name_servers | join(', ') }};
 
 {% for net in network %}
 subnet {{ net.net }} netmask {{ net.netmask }} {
