@@ -10,13 +10,18 @@
 {% endif %}
 {% if net.static_ips is defined %}
 {% for host in net.static_ips %}
-{{ host.name | regex_replace('\.', '_') }} = "{{ host.address }}" # {{ host.ethernet }}
+{% if host.alias is defined %}
+{{ host.alias | regex_replace('\.', '_') }} = "{{ host.address }}" {% if host.ethernet is defined %}# {{ host.ethernet }}{% endif %}
+
+{% else %}
+{{ host.name | regex_replace('\.', '_') }} = "{{ host.address }}" {% if host.ethernet is defined %}# {{ host.ethernet }}{% endif %}
+{% endif %}
+
 {% endfor %}
 {% endif %}
 {% endfor %}
 
 ext_if = "{{ ansible_default_ipv4.device }}"
-#vlans = "{ {{ vlan_list | join(', ') }} }"
 vlan_nets = "{ {{ vlan_list | join(':network, ') }}:network }"
 
 {% if pf_macros is defined %}
