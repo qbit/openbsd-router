@@ -142,6 +142,17 @@
   tags:
     - pf.conf
 
+- name: Configure authpf user directories
+  when: use_authpf == True
+  file:
+    path: "/etc/authpf/users/{{ item.name }}"
+    owner: root
+    group: wheel
+    state: directory
+  loop: "{{ authpf_users }}"
+  tags:
+    - pf.conf
+
 - name: Configure authpf in login.conf
   when: use_authpf == True
   blockinfile:
@@ -149,6 +160,37 @@
     owner: root
     group: wheel
     block: "{{ lookup('file', 'login.conf.authpf') }}"
+  tags:
+    - pf.conf
+
+- name: Configure authpf users
+  when: use_authpf == True
+  user:
+    name: "{{ item.name }}"
+    login_class: authpf
+    append: yes
+  loop: "{{ authpf_users }}"
+  tags:
+    - pf.conf
+
+- name: Configure authpf user rules
+  when: use_authpf == True
+  copy:
+    dest: "/etc/authpf/users/{{ item.name }}/authpf.rules"
+    owner: root
+    group: wheel
+    content: "{{ item.rules | join('\n') }}"
+  loop: "{{ authpf_users }}"
+  tags:
+    - pf.conf
+
+- name: Configure authpf user access
+  when: use_authpf == True
+  authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.pubkey }}"
+    exclusive: True
+  loop: "{{ authpf_users }}"
   tags:
     - pf.conf
 
