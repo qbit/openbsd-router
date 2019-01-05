@@ -39,7 +39,7 @@ vlan_nets = "{ {{ vlan_list | join(':network, ') }}:network }"
 table <firewall> const { self }
 {% if tables is defined %}
 {% for t in tables %}
-table <{{ t.name }}>{% if t.persist is defined and t.persist == True %} persist {% endif %}{% if t.file is defined %} file "{{ t.file }}"{% endif %}
+table <{{ t.name }}>{% if t.persist is defined and t.persist == True %} persist {% endif %}{% if t.file is defined %} file "{{ t.file }}"{%else%}{% if t.list is defined %}{ {{ t.list | join(', ') }} }{% endif %}{% endif %}
 
 {% endfor %}
 {% endif %}
