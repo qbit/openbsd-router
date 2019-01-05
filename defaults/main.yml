@@ -18,6 +18,8 @@ name_servers: [
   8.8.4.4
 ]
 
+nat_rules: []
+
 network:
   - {
           name: "Primary",

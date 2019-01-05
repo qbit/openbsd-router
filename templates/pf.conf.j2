@@ -79,6 +79,9 @@ block in quick from urpf-failed
 {% endfor %}
 
 # Nat our stuffs
+{% for entry in nat_rules %}
+{{ entry }}
+{% endfor %}
 match out on $ext_if inet from $vlan_nets nat-to ($ext_if)
 
 # Port forwarding example
