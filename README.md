@@ -48,10 +48,6 @@ Example Playbook
       roles:
          - { role: qbit.router }
 
-License
--------
-
-BSD
 
 Author Information
 ------------------
